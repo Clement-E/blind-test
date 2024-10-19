@@ -1,0 +1,47 @@
+.container {
+  --main-color: #8e19d2;
+  --secondary-color: #641095;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.playlist-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0.2rem;
+  border: 2px solid var(--main-color);
+  width: 280px;
+  height: 300px;
+  overflow-y: auto;
+}
+.playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  font-size: 10px;
+  width: 100%;
+}
+.playlist-item-current {
+  background-color: #845a9b4a;
+}
+.playlist-item-artiste {
+  color: #8e19d2 !important;
+  margin-bottom: 2px;
+  max-width: 260px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  margin-right: 2px;
+  font-weight: 700;
+}
+.playlist-item-song {
+  font-weight: 100;
+  margin-bottom: 2px;
+  font-style: italic;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,66 @@
+.mp-container {
+  --main-color: #f426a8;
+  --secondary-color: #801157;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.mp-pochette {
+  border: 3px solid var(--main-color);
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.mp-timer {
+  color: white;
+  font-size:10px;
+  position: relative;
+}
+.mp-pochette img {
+  width: 214px;
+}
+.mp-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding-top: 1.25rem;
+}
+.MuiSvgIcon-root {
+  cursor: pointer;
+}
+.MuiSvgIcon-root:hover {
+  color: var(--secondary-color);
+}
+.mp-infos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 280px;
+  margin-top: 1rem;
+}
+.mp-infos dl {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+}
+.mp-infos dt {
+  max-width: 2rem;
+  width: 2rem;
+  font-size: 10px;
+  color: var(--main-color);
+}
+.mp-infos dd {
+  font-size: 10px;
+  margin-inline-start: 1rem;
+  max-width: 248px;
+  width: 248px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

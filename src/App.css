@@ -1,0 +1,60 @@
+body {
+  background-color: #1c1b1b;
+  overflow: hidden;
+  font-family: Roboto, sans-serif;
+}
+#root {
+  width: 100%;
+}
+.board-container {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  justify-content: space-between;
+}
+.left-container  {
+  display: flex;
+  flex-direction: column;
+  width: 33%;
+  gap: 1rem;
+}
+.mid-container {
+  padding-top: 1rem;
+  width: 33%;
+}
+.right-container {
+  display: flex;
+  flex-direction: column;
+  width: 33%;
+}
+.MuiButton-sizeSmall {
+  padding: 0 !important;
+  min-width: 46px !important;
+}
+::-webkit-scrollbar {
+	width: 10px;
+	background-color: #F5F5F5;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #300846;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background-image: -webkit-gradient(linear,
+									   left bottom,
+									   left top,
+									   color-stop(0.44, rgb(121, 38, 151)),
+									   color-stop(0.72, rgb(125, 32, 122)),
+									   color-stop(0.86, rgb(103, 9, 108)));
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #8e19d2;
+}
