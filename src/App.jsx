@@ -30,6 +30,14 @@ function App() {
     },
   });
 
+  /*Pour faire une requette selon CLaude
+  https://claude.ai/chat/1001ddc9-5315-49c8-aeff-99859c300e46
+
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  const response = await fetch(`${API_URL}/api/users`);
+  const data = await response.json();*/
+
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
