@@ -7,6 +7,9 @@ import AddPlayer from "./Left/AddPlayer/AddPlayer";
 import Playlist from "./Right/Playlist/Playlist";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import {QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function App() {
 
@@ -30,16 +33,9 @@ function App() {
     },
   });
 
-  /*Pour faire une requette selon CLaude
-  https://claude.ai/chat/1001ddc9-5315-49c8-aeff-99859c300e46
-
-  const API_URL = import.meta.env.VITE_API_URL;
-
-  const response = await fetch(`${API_URL}/api/users`);
-  const data = await response.json();*/
-
   return (
-    <ThemeProvider theme={darkTheme}>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <div className="board-container">
         <div className="left-container">
@@ -55,7 +51,8 @@ function App() {
           <Playlist></Playlist>
         </div>
       </div>
-    </ThemeProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 

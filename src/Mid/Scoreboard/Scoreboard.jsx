@@ -1,6 +1,7 @@
 import "./Scoreboard.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
+import {usePlayers} from "../../hooks/usePlayers.ts";
 
 function Scoreboard() {
 
@@ -20,6 +21,10 @@ function Scoreboard() {
       },
     },
   });
+
+
+  const { data: players, isLoading, isError } = usePlayers();
+  console.log({ players, isLoading, isError });
 
   return (
     <ThemeProvider theme={theme}>
