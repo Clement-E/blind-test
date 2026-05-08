@@ -25,6 +25,7 @@ function Scoreboard() {
 
   const { data: players, isLoading, isError } = usePlayers();
   console.log({ players, isLoading, isError });
+  console.log("%c 1 --> Line: 28||Scoreboard.jsx\n isLoading: ","color:#f0f;", { players, isLoading, isError });
 
   return (
     <ThemeProvider theme={theme}>

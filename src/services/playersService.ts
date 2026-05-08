@@ -1,5 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL;
-console.log('API_URL:', API_URL);
+console.log("%c 2 --> Line: 2||playersService.ts\n API_URL: ","color:#0f0;", API_URL);
+
 
 export type Player = {
   id: number;
