@@ -1,0 +1,23 @@
+.rank-container {
+  --main-color: #24f34d;
+  border: 2px solid  var(--main-color);
+  padding: .5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.rank-title {
+  align-self:flex-end;
+}
+.player {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.player-name {
+  flex-grow: 1;
+}
+.player-name, .player-rank, .player-points {
+  font-weight: 100;
+  color: white;
+}

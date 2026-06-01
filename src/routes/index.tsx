@@ -1,10 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router'
-import MediaPlayer from '../Right/Mediaplayer/MediaPlayer'
-import Rank from '../Left/Rank/Rank'
-import AddSpotify from '../Left/AddSpotify/AddSpotify'
-import Scoreboard from '../Mid/Scoreboard/Scoreboard'
-import AddPlayer from '../Left/AddPlayer/AddPlayer'
-import Playlist from '../Right/Playlist/Playlist'
+﻿import { createFileRoute } from '@tanstack/react-router'
+import MediaPlayer from '../components/AdminDashboard/Right/Mediaplayer/MediaPlayer'
+import Rank from '../components/AdminDashboard/Left/Rank/Rank'
+import AddSpotify from '../components/AdminDashboard/Left/AddSpotify/AddSpotify'
+import Scoreboard from '../components/AdminDashboard/Mid/Scoreboard/Scoreboard'
+import AddPlayer from '../components/AdminDashboard/Left/AddPlayer/AddPlayer'
+import Playlist from '../components/AdminDashboard/Right/Playlist/Playlist'
 import '../App.css'
 
 export const Route = createFileRoute('/')({
@@ -29,3 +29,4 @@ function Home() {
     </div>
   )
 }
+

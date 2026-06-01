@@ -1,7 +1,7 @@
 import "./Scoreboard.css"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import Button from "@mui/material/Button"
-import { usePlayers } from "../../hooks/usePlayers"
+import { usePlayers } from "../../../../hooks/usePlayers"
 
 declare module "@mui/material/styles" {
   interface Palette {

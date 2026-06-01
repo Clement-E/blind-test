@@ -1,13 +1,8 @@
-import './App.css'
-import MediaPlayer from './Right/Mediaplayer/MediaPlayer'
-import Rank from './Left/Rank/Rank'
-import AddSpotify from "./Left/AddSpotify/AddSpotify"
-import Scoreboard from "./Mid/Scoreboard/Scoreboard"
-import AddPlayer from "./Left/AddPlayer/AddPlayer"
-import Playlist from "./Right/Playlist/Playlist"
+﻿import './App.css'
 import { ThemeProvider, createTheme } from "@mui/material/styles"
 import CssBaseline from "@mui/material/CssBaseline"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 
 const queryClient = new QueryClient()
 
@@ -36,23 +31,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
-        <div className="board-container">
-          <div className="left-container">
-            <AddSpotify />
-            <AddPlayer />
-            <Rank />
-          </div>
-          <div className="mid-container">
-            <Scoreboard />
-          </div>
-          <div className="right-container">
-            <MediaPlayer />
-            <Playlist />
-          </div>
-        </div>
+        <AdminDashboard />
       </ThemeProvider>
     </QueryClientProvider>
   )
 }
 
 export default App
+

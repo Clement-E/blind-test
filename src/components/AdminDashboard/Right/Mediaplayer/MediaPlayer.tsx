@@ -1,6 +1,6 @@
 import "./MediaPlayer.css"
 import IconButton from "@mui/material/Box"
-import placeholder from "../../assets/placeholder.png"
+import placeholder from "../../../../assets/placeholder.png"
 import {
   SkipPreviousRounded,
   SkipNextRounded,

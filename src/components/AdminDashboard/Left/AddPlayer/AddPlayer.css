@@ -1,0 +1,29 @@
+.Addplayer-container {
+  --main-color: #3ad1f7;
+  border: 2px solid  var(--main-color);
+  padding: .5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
+p {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--main-color);
+  margin: 0;
+}
+.actions {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  width: 100%;
+}
+.Addplayer-container label {
+  color: #2c5058 !important;
+}
+input {
+  color: var(--main-color) !important;
+  font-weight: 100 !important;
+}
