@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { playersService, playerKeys, type Player } from '../services/playersService';
+import { playersService, playerKeys, type Player } from '@/services/playersService';
 
 // GET tous les joueurs
 export const usePlayers = () =>

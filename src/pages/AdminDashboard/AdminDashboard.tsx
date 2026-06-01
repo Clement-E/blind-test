@@ -1,9 +1,9 @@
-﻿import AddSpotify from "../../components/AdminDashboard/Left/AddSpotify/AddSpotify"
-import AddPlayer from "../../components/AdminDashboard/Left/AddPlayer/AddPlayer"
-import Rank from "../../components/AdminDashboard/Left/Rank/Rank"
-import Scoreboard from "../../components/AdminDashboard/Mid/Scoreboard/Scoreboard"
-import MediaPlayer from "../../components/AdminDashboard/Right/Mediaplayer/MediaPlayer"
-import Playlist from "../../components/AdminDashboard/Right/Playlist/Playlist"
+﻿import AddSpotify from "@/components/AdminDashboard/Left/AddSpotify/AddSpotify"
+import AddPlayer from "@/components/AdminDashboard/Left/AddPlayer/AddPlayer"
+import Rank from "@/components/AdminDashboard/Left/Rank/Rank"
+import Scoreboard from "@/components/AdminDashboard/Mid/Scoreboard/Scoreboard"
+import MediaPlayer from "@/components/AdminDashboard/Right/Mediaplayer/MediaPlayer"
+import Playlist from "@/components/AdminDashboard/Right/Playlist/Playlist"
 
 export default function AdminDashboard() {
   return (
