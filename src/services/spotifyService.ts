@@ -1,8 +1,16 @@
 const API_URL = import.meta.env.VITE_API_URL
 
 export interface SpotifyTrack {
+  id: string
+  uri: string
   name: string
-  album: { name: string }
+  duration_ms: number
+  artists: { name: string }[]
+  album: {
+    name: string
+    release_date?: string
+    images?: { url: string }[]
+  }
 }
 
 export function extractPlaylistId(url: string): string | null {

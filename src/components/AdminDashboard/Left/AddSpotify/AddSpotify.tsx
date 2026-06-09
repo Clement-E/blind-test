@@ -17,7 +17,7 @@ interface Props {
 }
 
 function AddSpotify({ onPlaylistChange }: Props) {
-  const [url, setUrl] = useState("https://open.spotify.com/playlist/0kLaMbhyQbxEEL5ZzLjFkh?si=d7a259c373424b0f")
+  const [url, setUrl] = useState("https://open.spotify.com/playlist/4xcY90gLFqjd7zjXZz1Lpj?si=18b3821592bf4eea")
   const [error, setError] = useState("")
 
   const handleAdd = () => {

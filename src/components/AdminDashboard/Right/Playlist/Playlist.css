@@ -23,7 +23,7 @@
   font-size: 10px;
   width: 100%;
 }
-.playlist-item-current {
+.playlist-item--active {
   background-color: #845a9b4a;
 }
 .playlist-item-artiste {
