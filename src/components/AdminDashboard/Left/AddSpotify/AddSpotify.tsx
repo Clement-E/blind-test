@@ -3,7 +3,8 @@ import { useState } from "react"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import TextField from "@mui/material/TextField"
 import Button from "@mui/material/Button"
-import { extractPlaylistId } from "@/services/spotifyService"
+import CircularProgress from "@mui/material/CircularProgress"
+import { extractPlaylistId, fetchPlaylistTracks } from "@/services/spotifyService"
 
 const theme = createTheme({
   palette: {
@@ -13,21 +14,36 @@ const theme = createTheme({
 })
 
 interface Props {
-  onPlaylistChange:  React.Dispatch<React.SetStateAction<string | null>>
+  onPlaylistChange?: (id: string) => void
+  onCodeGenerated?: (code: string, playlistId: string) => void
 }
 
-function AddSpotify({ onPlaylistChange }: Props) {
+function generateCode(): string {
+  return Math.random().toString(36).substring(2, 8).toUpperCase()
+}
+
+function AddSpotify({ onPlaylistChange, onCodeGenerated }: Props) {
   const [url, setUrl] = useState("https://open.spotify.com/playlist/4xcY90gLFqjd7zjXZz1Lpj?si=18b3821592bf4eea")
   const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     const id = extractPlaylistId(url)
     if (!id) {
       setError("URL Spotify invalide")
       return
     }
     setError("")
-    onPlaylistChange(id)
+    setIsLoading(true)
+    try {
+      await fetchPlaylistTracks(id)
+      onPlaylistChange?.(id)
+      onCodeGenerated?.(generateCode(), id)
+    } catch {
+      setError("Impossible de charger la playlist")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -45,7 +61,15 @@ function AddSpotify({ onPlaylistChange }: Props) {
             error={!!error}
             helperText={error}
           />
-          <Button size="small" variant="contained" onClick={handleAdd}>Add</Button>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={handleAdd}
+            disabled={isLoading}
+            startIcon={isLoading ? <CircularProgress size={14} color="inherit" /> : null}
+          >
+            Add
+          </Button>
         </div>
       </div>
     </ThemeProvider>
