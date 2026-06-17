@@ -1,9 +1,13 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import Box from "@mui/material/Box"
 import Chip from "@mui/material/Chip"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
 import Tooltip from "@mui/material/Tooltip"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import DialogContent from "@mui/material/DialogContent"
+import DialogActions from "@mui/material/DialogActions"
 import Rank from "@/components/AdminDashboard/Left/Rank/Rank"
 import Scoreboard from "@/components/AdminDashboard/Mid/Scoreboard/Scoreboard"
 import MediaPlayer from "@/components/AdminDashboard/Right/Mediaplayer/MediaPlayer"
@@ -27,10 +31,19 @@ interface Props {
 
 export default function GameBoard({ role, gameCode, playlistId = null }: Props) {
   const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null)
+  const [captureModalOpen, setCaptureModalOpen] = useState(false)
   const { isLoggedIn, isReady, playerState, playTrack, togglePlay } = useSpotifyPlayer()
 
   const { isCapturing, playerCount, startCapture, triggerSyncStart } =
     useWebRTCMaster(role === 'maitre' ? gameCode ?? null : null)
+
+  useEffect(() => {
+    if (role === 'maitre') setCaptureModalOpen(true)
+  }, [role])
+
+  useEffect(() => {
+    if (isCapturing) setCaptureModalOpen(false)
+  }, [isCapturing])
 
   const { status } =
     useWebRTCPlayer(role === 'joueur' ? gameCode ?? null : null)
@@ -54,6 +67,30 @@ export default function GameBoard({ role, gameCode, playlistId = null }: Props) 
   }
 
   return (
+    <>
+    <Dialog open={captureModalOpen} onClose={() => setCaptureModalOpen(false)}>
+      <DialogTitle>Partager l'audio de cet onglet</DialogTitle>
+      <DialogContent>
+        <Typography variant="body2" color="text.secondary">
+          Pour diffuser la musique aux joueurs, tu dois partager l'audio de cet onglet.
+          <br /><br />
+          Dans la boîte de dialogue qui va s'ouvrir : sélectionne <strong>cet onglet</strong> et coche <strong>"Partager l'audio"</strong>.
+        </Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setCaptureModalOpen(false)} color="inherit">Plus tard</Button>
+        <Button
+          variant="contained"
+          onClick={async () => {
+            await startCapture()
+            setCaptureModalOpen(false)
+          }}
+        >
+          Partager l'audio
+        </Button>
+      </DialogActions>
+    </Dialog>
+
     <div className="board-container">
       <div className="left-container">
         {gameCode && (
@@ -110,5 +147,6 @@ export default function GameBoard({ role, gameCode, playlistId = null }: Props) 
         />
       </div>
     </div>
+    </>
   )
 }

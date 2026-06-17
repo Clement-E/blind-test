@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { isAuthenticated, handleOAuthCallback } from '@/hooks/useSpotifyAuth'
 
 interface SpotifyAuthContextValue {
@@ -9,10 +10,17 @@ const SpotifyAuthContext = createContext<SpotifyAuthContextValue>({ isLoggedIn: 
 
 export function SpotifyAuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated())
+  const navigate = useNavigate()
 
   useEffect(() => {
     handleOAuthCallback().then(wasCallback => {
-      if (wasCallback) setIsLoggedIn(true)
+      if (!wasCallback) return
+      setIsLoggedIn(true)
+      const redirectBack = sessionStorage.getItem('spotify_redirect_back')
+      sessionStorage.removeItem('spotify_redirect_back')
+      if (redirectBack && redirectBack !== '/') {
+        navigate({ to: redirectBack })
+      }
     })
   }, [])
 

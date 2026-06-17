@@ -33,6 +33,7 @@ export async function initiateSpotifyLogin(): Promise<void> {
   const verifier = generateRandomString(64)
   const challenge = base64url(await sha256(verifier))
   sessionStorage.setItem('spotify_pkce_verifier', verifier)
+  sessionStorage.setItem('spotify_redirect_back', window.location.pathname)
 
   const params = new URLSearchParams({
     response_type: 'code',
