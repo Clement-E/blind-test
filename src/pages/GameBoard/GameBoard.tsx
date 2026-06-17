@@ -47,7 +47,7 @@ export default function GameBoard({ role, gameCode, playlistId = null }: Props) 
           <Typography variant="caption">{STATUS_LABEL[status]}</Typography>
         </Box>
         <Box sx={{ flex: 1, overflow: 'auto' }}>
-          <Scoreboard />
+          <Rank />
         </Box>
       </Box>
     )

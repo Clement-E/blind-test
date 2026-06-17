@@ -25,8 +25,11 @@ export function useWebRTCPlayer(gameId: string | null) {
     wsRef.current = ws
 
     ws.onopen = () => ws.send(JSON.stringify({ type: 'join', gameId, role: 'player' }))
+    ws.onerror = (e) => console.error('[WS Player] erreur', e)
+    ws.onclose = (e) => console.warn('[WS Player] connexion fermée', e.code, e.reason)
 
     ws.onmessage = async (event) => {
+      if (event.data === 'ping') { ws.send('pong'); return }
       const msg = JSON.parse(event.data as string)
 
       switch (msg.type) {

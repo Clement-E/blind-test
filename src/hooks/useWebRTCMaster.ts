@@ -41,8 +41,11 @@ export function useWebRTCMaster(gameId: string | null) {
     }
 
     ws.onopen = () => ws.send(JSON.stringify({ type: 'join', gameId, role: 'master' }))
+    ws.onerror = (e) => console.error('[WS Master] erreur', e)
+    ws.onclose = (e) => console.warn('[WS Master] connexion fermée', e.code, e.reason)
 
     ws.onmessage = async (event) => {
+      if (event.data === 'ping') { ws.send('pong'); return }
       const msg = JSON.parse(event.data as string)
       switch (msg.type) {
         case 'player_joined':
@@ -84,6 +87,13 @@ export function useWebRTCMaster(gameId: string | null) {
       })
       // On ne garde que l'audio — la vidéo est requise par certains navigateurs pour ouvrir la boîte
       stream.getVideoTracks().forEach(t => t.stop())
+
+      if (stream.getAudioTracks().length === 0) {
+        stream.getTracks().forEach(t => t.stop())
+        alert('Aucun audio capturé. Recommence le partage en cochant "Partager l\'audio du système" dans la boîte de dialogue.')
+        return
+      }
+
       streamRef.current = stream
       setIsCapturing(true)
 
