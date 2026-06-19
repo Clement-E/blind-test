@@ -25,6 +25,8 @@ interface Props {
   currentTrack: SpotifyTrack | null
   playerState: SpotifyPlayerState
   onTogglePlay: () => void
+  onPrevious: () => void
+  onNext: () => void
   isReady: boolean
   isLoggedIn: boolean
 }
@@ -36,7 +38,7 @@ function formatTime(ms: number): string {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
 }
 
-function MediaPlayer({ currentTrack, playerState, onTogglePlay, isReady, isLoggedIn }: Props) {
+function MediaPlayer({ currentTrack, playerState, onTogglePlay, onPrevious, onNext, isReady, isLoggedIn }: Props) {
   const [displayPosition, setDisplayPosition] = useState(0)
   console.log("%c 1 --> Line: 40||MediaPlayer.tsx\n displayPosition: ","color:#f0f;", displayPosition);
 
@@ -78,7 +80,7 @@ function MediaPlayer({ currentTrack, playerState, onTogglePlay, isReady, isLogge
           </div>
         ) : (
           <div className="mp-actions">
-            <IconButton>
+            <IconButton onClick={onPrevious}>
               <SkipPreviousRounded fontSize="large" color="primary" aria-label="previous" />
             </IconButton>
             <IconButton
@@ -91,7 +93,7 @@ function MediaPlayer({ currentTrack, playerState, onTogglePlay, isReady, isLogge
                 <PlayCircleFilled fontSize="large" color="primary" aria-label="play" />
               )}
             </IconButton>
-            <IconButton>
+            <IconButton onClick={onNext}>
               <SkipNextRounded fontSize="large" color="primary" aria-label="next" />
             </IconButton>
           </div>

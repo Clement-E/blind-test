@@ -16,12 +16,16 @@ const initialState: SpotifyPlayerState = {
   trackUri: null,
 }
 
-export function useSpotifyPlayer() {
+export function useSpotifyPlayer(onTrackEnd?: () => void) {
   const { isLoggedIn } = useSpotifyAuth()
   const [isReady, setIsReady] = useState(false)
   const [deviceId, setDeviceId] = useState<string | null>(null)
   const [playerState, setPlayerState] = useState<SpotifyPlayerState>(initialState)
   const playerRef = useRef<Spotify.Player | null>(null)
+  const onTrackEndRef = useRef(onTrackEnd)
+  const prevStateRef = useRef<SpotifyPlayerState>(initialState)
+
+  useEffect(() => { onTrackEndRef.current = onTrackEnd }, [onTrackEnd])
 
   useEffect(() => {
     if (!isLoggedIn) return
@@ -51,12 +55,18 @@ export function useSpotifyPlayer() {
 
         player.addListener('player_state_changed', (state) => {
           if (!state) return
-          setPlayerState({
+          const prev = prevStateRef.current
+          const next: SpotifyPlayerState = {
             isPlaying: !state.paused,
             position: state.position,
             duration: state.duration,
             trackUri: state.track_window.current_track.uri,
-          })
+          }
+          if (prev.isPlaying && state.paused && state.position === 0 && prev.position > 1000) {
+            onTrackEndRef.current?.()
+          }
+          prevStateRef.current = next
+          setPlayerState(next)
         })
 
         player.connect()

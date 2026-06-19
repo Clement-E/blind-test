@@ -25,6 +25,9 @@ export const playersService = {
   create: (data: CreatePlayerInput) =>
     apiFetch<Player>('/api/players', { method: 'POST', ...jsonBody(data) }),
 
+  upsert: (data: CreatePlayerInput) =>
+    apiFetch<Player>('/api/players/upsert', { method: 'POST', ...jsonBody(data) }),
+
   update: (id: string, data: UpdatePlayerInput) =>
     apiFetch<Player>(`/api/players/${id}`, { method: 'PUT', ...jsonBody(data) }),
 

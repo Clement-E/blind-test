@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from "react"
+import {useState, useCallback, useEffect, useRef} from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import Box from "@mui/material/Box"
 import Chip from "@mui/material/Chip"
 import Button from "@mui/material/Button"
@@ -13,9 +14,13 @@ import Scoreboard from "@/components/AdminDashboard/Mid/Scoreboard/Scoreboard"
 import MediaPlayer from "@/components/AdminDashboard/Right/Mediaplayer/MediaPlayer"
 import Playlist from "@/components/AdminDashboard/Right/Playlist/Playlist"
 import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer"
+import { useSpotifyPlaylist } from "@/hooks/useSpotifyPlaylist"
 import { useWebRTCMaster } from "@/hooks/useWebRTCMaster"
 import { useWebRTCPlayer } from "@/hooks/useWebRTCPlayer"
+import { useGamePlayers } from "@/hooks/useGames"
+import { gameKeys } from "@/services/gamesService"
 import type { SpotifyTrack } from "@/services/spotifyService"
+import { ROLE_MASTER, ROLE_PLAYER, type Role } from "@/constants/roles"
 
 const STATUS_LABEL: Record<string, string> = {
   waiting:   '⏳ En attente du maître…',
@@ -24,43 +29,74 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 interface Props {
-  role?: 'joueur' | 'maitre'
+  role?: Role
   gameCode?: string | null
+  gameId?: string | null
   playlistId?: string | null
 }
 
-export default function GameBoard({ role, gameCode, playlistId = null }: Props) {
+export default function GameBoard({ role, gameCode, gameId, playlistId = null }: Props) {
+  const isMaster = role === ROLE_MASTER
+  const isPlayer = role === ROLE_PLAYER
+
+  const qc = useQueryClient()
+  const { data: players = [] } = useGamePlayers(gameId ?? '', { refetchInterval: 30_000 })
+
   const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null)
   const [captureModalOpen, setCaptureModalOpen] = useState(false)
-  const { isLoggedIn, isReady, playerState, playTrack, togglePlay } = useSpotifyPlayer()
 
-  const { isCapturing, playerCount, startCapture, triggerSyncStart } =
-    useWebRTCMaster(role === 'maitre' ? gameCode ?? null : null)
+  const { data: tracks = [] } = useSpotifyPlaylist(playlistId)
+
+  // Ref pour casser la dépendance circulaire navigateTrack ↔ useSpotifyPlayer
+  const onTrackEndRef = useRef<() => void>()
+  const { isLoggedIn, isReady, playerState, playTrack, togglePlay } = useSpotifyPlayer(
+    useCallback(() => onTrackEndRef.current?.(), [])
+  )
+
+  const navigateTrack = useCallback((delta: 1 | -1) => {
+    if (!tracks.length) return
+    const idx = tracks.findIndex(t => t.uri === currentTrack?.uri)
+    const next = tracks[idx + delta]
+    if (next) {
+      setCurrentTrack(next)
+      void playTrack(next.uri)
+    }
+  }, [tracks, currentTrack, playTrack])
+
+  useEffect(() => { onTrackEndRef.current = () => navigateTrack(1) }, [navigateTrack])
+
+  const { isCapturing, playerCount, playerEventCount, startCapture, triggerSyncStart } =
+    useWebRTCMaster(isMaster ? gameCode ?? null : null)
 
   useEffect(() => {
-    if (role === 'maitre') setCaptureModalOpen(true)
-  }, [role])
+    if (isMaster) setCaptureModalOpen(true)
+  }, [isMaster])
+
+  useEffect(() => {
+    if (!gameId || playerEventCount === 0) return
+    void qc.invalidateQueries({ queryKey: gameKeys.players(gameId) })
+  }, [playerEventCount, gameId, qc])
 
   useEffect(() => {
     if (isCapturing) setCaptureModalOpen(false)
   }, [isCapturing])
 
   const { status } =
-    useWebRTCPlayer(role === 'joueur' ? gameCode ?? null : null)
+    useWebRTCPlayer(isPlayer ? gameCode ?? null : null)
 
   const handleTrackSelect = useCallback(async (track: SpotifyTrack) => {
     setCurrentTrack(track)
     await playTrack(track.uri)
   }, [playTrack])
 
-  if (role === 'joueur') {
+  if (isPlayer) {
     return (
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1, opacity: 0.6 }}>
           <Typography variant="caption">{STATUS_LABEL[status]}</Typography>
         </Box>
         <Box sx={{ flex: 1, overflow: 'auto' }}>
-          <Rank />
+          <Rank players={players} />
         </Box>
       </Box>
     )
@@ -127,16 +163,18 @@ export default function GameBoard({ role, gameCode, playlistId = null }: Props) 
           )}
         </Box>
 
-        <Rank />
+        <Rank players={players} />
       </div>
       <div className="mid-container">
-        <Scoreboard />
+        {gameId && <Scoreboard players={players} gameId={gameId} />}
       </div>
       <div className="right-container">
         <MediaPlayer
           currentTrack={currentTrack}
           playerState={playerState}
           onTogglePlay={togglePlay}
+          onPrevious={() => navigateTrack(-1)}
+          onNext={() => navigateTrack(1)}
           isReady={isReady}
           isLoggedIn={isLoggedIn}
         />

@@ -44,11 +44,12 @@ export const useDeleteGame = () => {
 
 // ── game_players ──────────────────────────────────────────────────────────────
 
-export const useGamePlayers = (gameId: string) =>
+export const useGamePlayers = (gameId: string, options?: { refetchInterval?: number }) =>
   useQuery({
     queryKey: gameKeys.players(gameId),
     queryFn: () => gamesService.getPlayers(gameId),
     enabled: !!gameId,
+    refetchInterval: options?.refetchInterval,
   })
 
 export const useAddGamePlayer = (gameId: string) => {

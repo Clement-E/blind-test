@@ -1,7 +1,8 @@
 import "./Scoreboard.css"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import Button from "@mui/material/Button"
-import { usePlayers } from "@/hooks/usePlayers"
+import { useUpdateScore } from "@/hooks/useGames"
+import type { GamePlayer } from "@/services/gamesService"
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -26,141 +27,35 @@ const theme = createTheme({
   },
 })
 
-function Scoreboard() {
-  const { data: players, isLoading, isError } = usePlayers()
-  console.log({ players, isLoading, isError })
-  console.log("%c 1 --> Line: 28||Scoreboard.tsx\n isLoading: ", "color:#f0f;", { players, isLoading, isError })
+interface Props {
+  players: GamePlayer[]
+  gameId: string
+}
+
+function Scoreboard({ players, gameId }: Props) {
+  const { mutate: updateScore } = useUpdateScore(gameId)
+
+  const adjust = (player: GamePlayer, delta: number) => {
+    updateScore({ playerId: player.id, score: Math.max(0, Number(player.score) + delta) })
+  }
 
   return (
     <ThemeProvider theme={theme}>
       <div className="scoreboard-container">
         <p className="scoreboard-title">Scoreboard</p>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
-        <div className="scoreboard-player">
-          <p className="scoreboard-name">BikiniBandit</p>
-          <Button size="small" variant="contained">+1</Button>
-          <Button size="small" color="secondary" variant="contained">+1/2</Button>
-          <Button size="small" color="ternary" variant="contained">-1</Button>
-        </div>
+        {players.length === 0 && (
+          <p style={{ textAlign: 'center', opacity: 0.5, fontSize: '0.85rem' }}>
+            En attente de joueurs…
+          </p>
+        )}
+        {players.map((player) => (
+          <div key={player.id} className="scoreboard-player">
+            <p className="scoreboard-name">{player.username}</p>
+            <Button size="small" variant="contained" onClick={() => adjust(player, 1)}>+1</Button>
+            <Button size="small" color="secondary" variant="contained" onClick={() => adjust(player, 0.5)}>+1/2</Button>
+            <Button size="small" color="ternary" variant="contained" onClick={() => adjust(player, -1)}>-1</Button>
+          </div>
+        ))}
       </div>
     </ThemeProvider>
   )

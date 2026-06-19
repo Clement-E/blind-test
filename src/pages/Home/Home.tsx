@@ -3,10 +3,12 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import AddSpotify from '@/components/AdminDashboard/Left/AddSpotify/AddSpotify'
-type Role = 'joueur' | 'maitre'
+import { ROLE_PLAYER, type Role } from '@/constants/roles'
+import { gamesService } from '@/services/gamesService'
+import { playersService } from '@/services/playersService'
 
 interface PlayerForm {
   code: string
@@ -16,6 +18,8 @@ interface PlayerForm {
 
 export default function Home() {
   const [role, setRole] = useState<Role | null>(null)
+  const [joinError, setJoinError] = useState<string | null>(null)
+  const [isJoining, setIsJoining] = useState(false)
   const navigate = useNavigate()
 
   const {
@@ -24,15 +28,22 @@ export default function Home() {
     formState: { errors },
   } = useForm<PlayerForm>()
 
-  const onJoin = ({ code, pseudo, email }: PlayerForm) => {
-    sessionStorage.setItem('blindtest_role', 'joueur')
-    sessionStorage.setItem('blindtest_player', JSON.stringify({ pseudo, email }))
-    void navigate({ to: '/game/$gameId', params: { gameId: code } })
-  }
-
-  const handleCodeGenerated = (code: string, playlistId: string) => {
-    sessionStorage.setItem('blindtest_playlistId', playlistId)
-    void navigate({ to: '/game/$gameId', params: { gameId: code } })
+  const onJoin = async ({ code, pseudo, email }: PlayerForm) => {
+    setJoinError(null)
+    setIsJoining(true)
+    try {
+      const game = await gamesService.getByCode(code)
+      const player = await playersService.upsert({ email, username: pseudo })
+      await gamesService.addPlayer(game.id, player.id)
+      sessionStorage.setItem('blindtest_role', ROLE_PLAYER)
+      sessionStorage.setItem('blindtest_game_id', game.id)
+      sessionStorage.setItem('blindtest_player_id', player.id)
+      void navigate({ to: '/game/$gameId', params: { gameId: code } })
+    } catch {
+      setJoinError('Code invalide ou partie introuvable')
+    } finally {
+      setIsJoining(false)
+    }
   }
 
   return (
@@ -61,7 +72,7 @@ export default function Home() {
             <Button
               variant="outlined"
               size="large"
-              onClick={() => setRole('joueur')}
+              onClick={() => setRole(ROLE_PLAYER)}
               sx={{ px: 5, py: 2, fontSize: '1.1rem', borderRadius: 3 }}
             >
               Je suis joueur
@@ -69,7 +80,7 @@ export default function Home() {
             <Button
               variant="contained"
               size="large"
-              onClick={() => setRole('maitre')}
+              onClick={() => void navigate({ to: '/create_game' })}
               sx={{ px: 5, py: 2, fontSize: '1.1rem', borderRadius: 3 }}
             >
               Je suis maître du jeu
@@ -78,19 +89,7 @@ export default function Home() {
         </>
       )}
 
-      {role === 'maitre' && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', maxWidth: 480 }}>
-          <Typography variant="h5" textAlign="center" color="text.secondary">
-            Configurez votre partie
-          </Typography>
-          <AddSpotify onCodeGenerated={handleCodeGenerated} />
-          <Button size="small" onClick={() => setRole(null)}>
-            Retour
-          </Button>
-        </Box>
-      )}
-
-      {role === 'joueur' && (
+      {role === ROLE_PLAYER && (
         <Box
           component="form"
           onSubmit={handleSubmit(onJoin)}
@@ -134,13 +133,21 @@ export default function Home() {
             })}
           />
 
+          {joinError && (
+            <Typography color="error" variant="body2" textAlign="center">
+              {joinError}
+            </Typography>
+          )}
+
           <Button
             type="submit"
             variant="contained"
             size="large"
+            disabled={isJoining}
             sx={{ borderRadius: 3, mt: 1 }}
+            startIcon={isJoining ? <CircularProgress size={18} color="inherit" /> : null}
           >
-            Rejoindre la partie
+            {isJoining ? 'Connexion...' : 'Rejoindre la partie'}
           </Button>
 
           <Button size="small" onClick={() => setRole(null)}>

@@ -4,6 +4,7 @@ export type GameStatus = 'waiting' | 'playing' | 'finished'
 
 export type Game = {
   id: string
+  code: string
   playlist_url: string
   status: GameStatus
   created_at: string
@@ -17,7 +18,7 @@ export type GamePlayer = {
   joined_at: string
 }
 
-export type CreateGameInput = { id: string; playlist_url: string; status?: GameStatus }
+export type CreateGameInput = { playlist_url: string; status?: GameStatus }
 export type UpdateGameInput = Partial<Pick<Game, 'playlist_url' | 'status'>>
 
 export const gameKeys = {
@@ -32,6 +33,9 @@ export const gamesService = {
 
   getById: (id: string) =>
     apiFetch<Game>(`/api/games/${id}`),
+
+  getByCode: (code: string) =>
+    apiFetch<Game>(`/api/games/code/${code}`),
 
   create: (data: CreateGameInput) =>
     apiFetch<Game>('/api/games', { method: 'POST', ...jsonBody(data) }),

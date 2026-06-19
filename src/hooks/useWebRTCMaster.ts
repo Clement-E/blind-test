@@ -15,6 +15,7 @@ export function useWebRTCMaster(gameId: string | null) {
   const peersRef = useRef(new Map<string, RTCPeerConnection>())
   const [isCapturing, setIsCapturing] = useState(false)
   const [playerCount, setPlayerCount] = useState(0)
+  const [playerEventCount, setPlayerEventCount] = useState(0)
 
   useEffect(() => {
     if (!gameId) return
@@ -50,10 +51,12 @@ export function useWebRTCMaster(gameId: string | null) {
       switch (msg.type) {
         case 'player_joined':
           setPlayerCount(n => n + 1)
+          setPlayerEventCount(n => n + 1)
           await createPeer(msg.playerId)
           break
         case 'player_left':
           setPlayerCount(n => Math.max(0, n - 1))
+          setPlayerEventCount(n => n + 1)
           peersRef.current.get(msg.playerId)?.close()
           peersRef.current.delete(msg.playerId)
           break
@@ -113,5 +116,5 @@ export function useWebRTCMaster(gameId: string | null) {
     wsRef.current?.send(JSON.stringify({ type: 'sync_start', gameId }))
   }, [gameId])
 
-  return { isCapturing, playerCount, startCapture, triggerSyncStart }
+  return { isCapturing, playerCount, playerEventCount, startCapture, triggerSyncStart }
 }
