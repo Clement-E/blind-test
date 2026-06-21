@@ -77,6 +77,9 @@ export function useSpotifyPlayer(onTrackEnd?: () => void) {
         createPlayer()
       } else {
         window.onSpotifyWebPlaybackSDKReady = createPlayer
+        const script = document.createElement('script')
+        script.src = 'https://sdk.scdn.co/spotify-player.js'
+        document.body.appendChild(script)
       }
     }
 
