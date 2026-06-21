@@ -81,7 +81,7 @@ export default function GameBoard({ role, gameCode, gameId, playlistId = null }:
     if (isCapturing) setCaptureModalOpen(false)
   }, [isCapturing])
 
-  const { status } =
+  const { status, audioUnlocked, resumeAudio } =
     useWebRTCPlayer(isPlayer ? gameCode ?? null : null)
 
   const handleTrackSelect = useCallback(async (track: SpotifyTrack) => {
@@ -92,8 +92,15 @@ export default function GameBoard({ role, gameCode, gameId, playlistId = null }:
   if (isPlayer) {
     return (
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1, opacity: 0.6 }}>
-          <Typography variant="caption">{STATUS_LABEL[status]}</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1 }}>
+          <Box>
+            {!audioUnlocked && (
+              <Button variant="contained" size="small" onClick={resumeAudio}>
+                🔊 Autoriser la diffusion
+              </Button>
+            )}
+          </Box>
+          <Typography variant="caption" sx={{ opacity: 0.6 }}>{STATUS_LABEL[status]}</Typography>
         </Box>
         <Box sx={{ flex: 1, overflow: 'auto' }}>
           <Rank players={players} />

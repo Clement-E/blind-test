@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
@@ -16,10 +16,29 @@ export function useWebRTCPlayer(gameId: string | null) {
   const peerRef = useRef<RTCPeerConnection | null>(null)
   const gainRef = useRef<GainNode | null>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
+  const syncReceivedRef = useRef(false)
   const [status, setStatus] = useState<StreamStatus>('waiting')
+  const [audioUnlocked, setAudioUnlocked] = useState(false)
+
+  // Must be called from a user gesture (button click) to satisfy autoplay policy.
+  const resumeAudio = useCallback(async () => {
+    const ctx = audioCtxRef.current
+    if (!ctx) return
+    await ctx.resume()
+    // If sync_start already arrived while context was suspended, unmute immediately.
+    if (syncReceivedRef.current && gainRef.current) {
+      gainRef.current.gain.value = 1
+    }
+    setAudioUnlocked(true)
+  }, [])
 
   useEffect(() => {
     if (!gameId) return
+
+    // Create the AudioContext now (suspended) so the audio graph can be wired in
+    // ontrack without needing a user gesture at that point.
+    const audioCtx = new AudioContext()
+    audioCtxRef.current = audioCtx
 
     const ws = new WebSocket(getWsUrl())
     wsRef.current = ws
@@ -43,17 +62,10 @@ export function useWebRTCPlayer(gameId: string | null) {
             }
           }
 
-          peer.ontrack = async (e) => {
-            const audioCtx = new AudioContext()
-            audioCtxRef.current = audioCtx
-
-            await audioCtx.resume()
-
+          peer.ontrack = (e) => {
             const source = audioCtx.createMediaStreamSource(e.streams[0])
             const gain = audioCtx.createGain()
             gainRef.current = gain
-
-            // Silence total jusqu'au signal sync_start
             gain.gain.value = 0
             source.connect(gain)
             gain.connect(audioCtx.destination)
@@ -74,17 +86,20 @@ export function useWebRTCPlayer(gameId: string | null) {
           break
 
         case 'sync_start': {
-          const audioCtx = audioCtxRef.current
           const gain = gainRef.current
-          if (!audioCtx || !gain) break
+          if (!gain) break
 
-          // Calcule l'instant précis dans l'horloge interne de l'AudioContext
+          syncReceivedRef.current = true
+
+          if (audioCtx.state === 'suspended') {
+            // Context not yet unlocked by user — resumeAudio() will unmute on click.
+            setTimeout(() => setStatus('playing'), 0)
+            break
+          }
+
           const delayMs = Math.max(0, (msg.timestamp as number) - Date.now())
           const scheduleAt = audioCtx.currentTime + delayMs / 1000
-
-          // Unmute précis via l'API Web Audio — pas de setTimeout flottant
           gain.gain.setValueAtTime(1, scheduleAt)
-
           setTimeout(() => setStatus('playing'), delayMs)
           break
         }
@@ -94,9 +109,11 @@ export function useWebRTCPlayer(gameId: string | null) {
     return () => {
       ws.close()
       peerRef.current?.close()
-      audioCtxRef.current?.close()
+      audioCtx.close()
+      audioCtxRef.current = null
+      syncReceivedRef.current = false
     }
   }, [gameId])
 
-  return { status }
+  return { status, audioUnlocked, resumeAudio }
 }
