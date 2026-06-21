@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-
-const ICE_SERVERS = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
-]
+import { getIceServers } from '@/lib/iceServers'
 
 function getWsUrl(): string {
   return (import.meta.env.VITE_API_URL as string).replace(/^http/, 'ws')
@@ -25,7 +21,7 @@ export function useWebRTCMaster(gameId: string | null) {
 
     const createPeer = async (pId: string) => {
       if (!streamRef.current) return
-      const peer = new RTCPeerConnection({ iceServers: ICE_SERVERS })
+      const peer = new RTCPeerConnection({ iceServers: getIceServers() })
       peersRef.current.set(pId, peer)
 
       streamRef.current.getAudioTracks().forEach(t => peer.addTrack(t, streamRef.current!))
