@@ -43,9 +43,11 @@ export function useWebRTCPlayer(gameId: string | null) {
             }
           }
 
-          peer.ontrack = (e) => {
+          peer.ontrack = async (e) => {
             const audioCtx = new AudioContext()
             audioCtxRef.current = audioCtx
+
+            await audioCtx.resume()
 
             const source = audioCtx.createMediaStreamSource(e.streams[0])
             const gain = audioCtx.createGain()

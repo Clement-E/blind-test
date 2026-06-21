@@ -40,7 +40,6 @@ function formatTime(ms: number): string {
 
 function MediaPlayer({ currentTrack, playerState, onTogglePlay, onPrevious, onNext, isReady, isLoggedIn }: Props) {
   const [displayPosition, setDisplayPosition] = useState(0)
-  console.log("%c 1 --> Line: 40||MediaPlayer.tsx\n displayPosition: ","color:#f0f;", displayPosition);
 
   useEffect(() => {
     setDisplayPosition(playerState.position)
