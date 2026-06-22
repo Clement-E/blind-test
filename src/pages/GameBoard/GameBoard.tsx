@@ -182,7 +182,7 @@ export default function GameBoard({ role, gameCode, gameId, playlistId = null }:
           )}
         </Box>
 
-        <Rank players={players} />
+        <Rank players={players} connectedPlayerIds={connectedDbPlayerIds} />
         {gameId && <GuessList gameId={gameId} />}
       </div>
       <div className="mid-container">

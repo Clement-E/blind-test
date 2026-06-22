@@ -39,7 +39,8 @@ export function useWebRTCPlayer(gameId: string | null) {
     const ws = new WebSocket(getWsUrl())
     wsRef.current = ws
 
-    ws.onopen = () => ws.send(JSON.stringify({ type: 'join', gameId, role: 'player' }))
+    const dbPlayerId = sessionStorage.getItem('blindtest_player_id')
+    ws.onopen = () => ws.send(JSON.stringify({ type: 'join', gameId, role: 'player', dbPlayerId }))
     ws.onerror = (e) => console.error('[WS Player] erreur', e)
     ws.onclose = (e) => console.warn('[WS Player] connexion fermée', e.code, e.reason)
 

@@ -12,6 +12,7 @@ export function useWebRTCMaster(gameId: string | null) {
   const [isCapturing, setIsCapturing] = useState(false)
   const [playerCount, setPlayerCount] = useState(0)
   const [playerEventCount, setPlayerEventCount] = useState(0)
+  const [connectedDbPlayerIds, setConnectedDbPlayerIds] = useState(new Set<string>())
 
   useEffect(() => {
     if (!gameId) return
@@ -48,11 +49,13 @@ export function useWebRTCMaster(gameId: string | null) {
         case 'player_joined':
           setPlayerCount(n => n + 1)
           setPlayerEventCount(n => n + 1)
+          if (msg.dbPlayerId) setConnectedDbPlayerIds(prev => new Set([...prev, msg.dbPlayerId as string]))
           await createPeer(msg.playerId)
           break
         case 'player_left':
           setPlayerCount(n => Math.max(0, n - 1))
           setPlayerEventCount(n => n + 1)
+          if (msg.dbPlayerId) setConnectedDbPlayerIds(prev => { const s = new Set(prev); s.delete(msg.dbPlayerId as string); return s })
           peersRef.current.get(msg.playerId)?.close()
           peersRef.current.delete(msg.playerId)
           break
@@ -120,5 +123,5 @@ export function useWebRTCMaster(gameId: string | null) {
     setIsCapturing(false)
   }, [])
 
-  return { isCapturing, playerCount, playerEventCount, startCapture, stopCapture, triggerSyncStart }
+  return { isCapturing, playerCount, playerEventCount, connectedDbPlayerIds, startCapture, stopCapture, triggerSyncStart }
 }
