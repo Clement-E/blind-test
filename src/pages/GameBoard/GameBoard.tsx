@@ -66,7 +66,7 @@ export default function GameBoard({ role, gameCode, gameId, playlistId = null }:
 
   useEffect(() => { onTrackEndRef.current = () => navigateTrack(1) }, [navigateTrack])
 
-  const { isCapturing, playerCount, playerEventCount, startCapture, stopCapture, triggerSyncStart } =
+  const { isCapturing, playerCount, playerEventCount, connectedDbPlayerIds, startCapture, stopCapture, triggerSyncStart } =
     useWebRTCMaster(isMaster ? gameCode ?? null : null)
 
   useEffect(() => {
