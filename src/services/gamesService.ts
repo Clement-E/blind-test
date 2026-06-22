@@ -21,10 +21,28 @@ export type GamePlayer = {
 export type CreateGameInput = { playlist_url: string; status?: GameStatus }
 export type UpdateGameInput = Partial<Pick<Game, 'playlist_url' | 'status'>>
 
+export type GameGuess = {
+  id: string
+  player_id: string
+  username: string
+  track_uri: string
+  track_name: string
+  artist_name: string
+  guessed_at: string
+}
+
+export type CreateGuessInput = {
+  player_id: string
+  track_uri: string
+  track_name: string
+  artist_name: string
+}
+
 export const gameKeys = {
   all: ['games'] as const,
   detail: (id: string) => ['games', id] as const,
   players: (id: string) => ['games', id, 'players'] as const,
+  guesses: (id: string) => ['games', id, 'guesses'] as const,
 }
 
 export const gamesService = {
@@ -62,4 +80,10 @@ export const gamesService = {
 
   removePlayer: (gameId: string, playerId: string) =>
     apiFetch(`/api/games/${gameId}/players/${playerId}`, { method: 'DELETE' }),
+
+  getGuesses: (gameId: string) =>
+    apiFetch<GameGuess[]>(`/api/games/${gameId}/guesses`),
+
+  addGuess: (gameId: string, data: CreateGuessInput) =>
+    apiFetch<GameGuess>(`/api/games/${gameId}/guesses`, { method: 'POST', ...jsonBody(data) }),
 }

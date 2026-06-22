@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { gamesService, gameKeys, type CreateGameInput, type UpdateGameInput } from '@/services/gamesService'
+import { gamesService, gameKeys, type CreateGameInput, type UpdateGameInput, type CreateGuessInput } from '@/services/gamesService'
 
 export const useGames = () =>
   useQuery({
@@ -74,5 +74,21 @@ export const useRemoveGamePlayer = (gameId: string) => {
   return useMutation({
     mutationFn: (playerId: string) => gamesService.removePlayer(gameId, playerId),
     onSuccess: () => qc.invalidateQueries({ queryKey: gameKeys.players(gameId) }),
+  })
+}
+
+export const useGameGuesses = (gameId: string, options?: { refetchInterval?: number }) =>
+  useQuery({
+    queryKey: gameKeys.guesses(gameId),
+    queryFn: () => gamesService.getGuesses(gameId),
+    enabled: !!gameId,
+    refetchInterval: options?.refetchInterval,
+  })
+
+export const useAddGuess = (gameId: string) => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CreateGuessInput) => gamesService.addGuess(gameId, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: gameKeys.guesses(gameId) }),
   })
 }

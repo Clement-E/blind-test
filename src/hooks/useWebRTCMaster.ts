@@ -112,5 +112,13 @@ export function useWebRTCMaster(gameId: string | null) {
     wsRef.current?.send(JSON.stringify({ type: 'sync_start', gameId }))
   }, [gameId])
 
-  return { isCapturing, playerCount, playerEventCount, startCapture, triggerSyncStart }
+  const stopCapture = useCallback(() => {
+    streamRef.current?.getTracks().forEach(t => t.stop())
+    streamRef.current = null
+    peersRef.current.forEach(p => p.close())
+    peersRef.current.clear()
+    setIsCapturing(false)
+  }, [])
+
+  return { isCapturing, playerCount, playerEventCount, startCapture, stopCapture, triggerSyncStart }
 }

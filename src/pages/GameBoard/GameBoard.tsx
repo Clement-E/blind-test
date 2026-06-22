@@ -11,6 +11,7 @@ import DialogContent from "@mui/material/DialogContent"
 import DialogActions from "@mui/material/DialogActions"
 import Rank from "@/components/AdminDashboard/Left/Rank/Rank"
 import Scoreboard from "@/components/AdminDashboard/Mid/Scoreboard/Scoreboard"
+import GuessList from "@/components/GuessList/GuessList"
 import MediaPlayer from "@/components/AdminDashboard/Right/Mediaplayer/MediaPlayer"
 import Playlist from "@/components/AdminDashboard/Right/Playlist/Playlist"
 import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer"
@@ -40,7 +41,7 @@ export default function GameBoard({ role, gameCode, gameId, playlistId = null }:
   const isPlayer = role === ROLE_PLAYER
 
   const qc = useQueryClient()
-  const { data: players = [] } = useGamePlayers(gameId ?? '', { refetchInterval: 30_000 })
+  const { data: players = [] } = useGamePlayers(gameId ?? '', { refetchInterval: isMaster? 30_000 : 3_000 })
 
   const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null)
   const [captureModalOpen, setCaptureModalOpen] = useState(false)
@@ -65,7 +66,7 @@ export default function GameBoard({ role, gameCode, gameId, playlistId = null }:
 
   useEffect(() => { onTrackEndRef.current = () => navigateTrack(1) }, [navigateTrack])
 
-  const { isCapturing, playerCount, playerEventCount, startCapture, triggerSyncStart } =
+  const { isCapturing, playerCount, playerEventCount, startCapture, stopCapture, triggerSyncStart } =
     useWebRTCMaster(isMaster ? gameCode ?? null : null)
 
   useEffect(() => {
@@ -104,6 +105,7 @@ export default function GameBoard({ role, gameCode, gameId, playlistId = null }:
         </Box>
         <Box sx={{ flex: 1, overflow: 'auto' }}>
           <Rank players={players} />
+          {gameId && <GuessList gameId={gameId} refetchInterval={5_000} />}
         </Box>
       </Box>
     )
@@ -158,22 +160,33 @@ export default function GameBoard({ role, gameCode, gameId, playlistId = null }:
               </Button>
             </Tooltip>
           ) : (
-            <Button
-              variant="contained"
-              size="small"
-              color="error"
-              disabled={playerCount === 0}
-              onClick={triggerSyncStart}
-            >
-              🔴 Diffuser aux joueurs
-            </Button>
+            <>
+              <Button
+                variant="contained"
+                size="small"
+                color="error"
+                disabled={playerCount === 0}
+                onClick={triggerSyncStart}
+              >
+                🔴 Diffuser aux joueurs
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                color="error"
+                onClick={stopCapture}
+              >
+                ⏹ Arrêter la diffusion
+              </Button>
+            </>
           )}
         </Box>
 
         <Rank players={players} />
+        {gameId && <GuessList gameId={gameId} />}
       </div>
       <div className="mid-container">
-        {gameId && <Scoreboard players={players} gameId={gameId} />}
+        {gameId && <Scoreboard players={players} gameId={gameId} currentTrack={currentTrack} />}
       </div>
       <div className="right-container">
         <MediaPlayer
